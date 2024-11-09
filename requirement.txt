@@ -1,0 +1,6 @@
+gradio
+numpy
+opencv-python
+keras
+tensorflow
+cv2
