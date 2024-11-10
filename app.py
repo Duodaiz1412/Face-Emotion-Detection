@@ -4,6 +4,7 @@ import cv2
 from keras.models import load_model
 
 theme = gr.themes.Soft()
+
 # Tải mô hình
 model = load_model('emotion_model.h5')
 
@@ -50,10 +51,20 @@ def predict_emotion(image):
 
     # Dự đoán cảm xúc
     prediction = model.predict(face_image)
+    print(prediction)
     emotion_index = np.argmax(prediction)
+    print(f"Vị trí của cảm xúc: {emotion_index + 1}")
     emotion = emotion_labels[emotion_index]
     icon = emotion_icons[emotion_index]
     return f"Cảm xúc khuôn mặt là: {emotion} {icon}", preview_image  # Trả về cảm xúc và hình ảnh đã khoanh vùng
+
+js = """
+window.onload = function() {
+        if (!window.location.href.includes('__theme=light')) {
+            window.location.href = window.location.href + '?__theme=light';
+        }
+    }
+"""
 
 css = """
 textarea {
@@ -70,10 +81,11 @@ description_text = "Ứng dụng này sử dụng mô hình CNN cho phép ngư�
 iface = gr.Interface(theme=theme,
                      fn=predict_emotion, 
                      inputs=gr.Image(type="numpy", label="Tải lên hình ảnh"),
-                     outputs=[gr.Textbox(label="Cảm xúc dự đoán", elem_id="output-text"), gr.Image(label="Hình ảnh đã khoanh vùng")],
+                     outputs=[gr.Textbox(label="Cảm xúc dự đoán"), gr.Image(label="Hình ảnh đã khoanh vùng")],
                      title="Dự đoán cảm xúc khuôn mặt",
                      description=description_text,
-                     css=css
+                     css=css,
+                     js=js
                      )  # Thêm mô tả cho ứng dụng
 
 # Chạy ứng dụng
